@@ -1,0 +1,31 @@
+spin_manifest_version = "1"
+authors = ["Matt Butcher <matt.butcher@fermyon.com>"]
+description = "Track the number of times the dog has been fed"
+name = "feed-the-dog"
+trigger = { type = "http", base = "/" }
+version = "0.1.0"
+
+[[component]]
+id = "feed-the-dog"
+source = "target/feed-the-dog.wasm"
+exclude_files = ["**/node_modules"]
+key_value_stores = ["default"]
+[component.trigger]
+route = "/..."
+[component.build]
+command = "npm run build"
+
+[[component]]
+source = { url = "https://github.com/fermyon/spin-fileserver/releases/download/v0.0.2/spin_static_fs.wasm", digest = "sha256:65456bf4e84cf81b62075e761b2b0afaffaef2d0aeda521b245150f76b96421b" }
+id = "files"
+files = [{ source = "assets", destination = "/" }]
+[component.trigger]
+route = "/static/..."
+
+[[component]]
+source = { url = "https://github.com/fermyon/spin-redirect/releases/download/v0.0.1/redirect.wasm", digest = "sha256:d57c3d91e9b62a6b628516c6d11daf6681e1ca2355251a3672074cddefd7f391" }
+id = "redirect-favicon"
+environment = { DESTINATION = "/static/favicon.ico" }
+[component.trigger]
+route = "/favicon.ico"
+executor = { type = "wagi" }
